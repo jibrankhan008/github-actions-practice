@@ -1,0 +1,36 @@
+name: frontend CICD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  frontend-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build Frontend Docker Image
+        run: docker build -t wanderlust-mega-project-frontend ./frontend
+
+      - name: Tag Docker Image
+        run: docker tag wanderlust-mega-project-frontend:latest 060679227712.dkr.ecr.us-east-2.amazonaws.com/wanderlust-mega-project-frontend:latest
+
+      - name: Push Docker Image to ECR
+        run: docker push 060679227712.dkr.ecr.us-east-2.amazonaws.com/wanderlust-mega-project-frontend:latest
+
+      - name: Deploy to ECS
+        run: aws ecs update-service --cluster wanderlust-mega-project-cluster --service frontend-task-service --force-new-deployment --region us-east-2
