@@ -69,5 +69,5 @@ jobs:
         run: docker push 060679227712.dkr.ecr.us-east-2.amazonaws.com/${{ env.ECR_REPOSITORY }}:latest
       - name: Deploy to ECS
       #  run: aws ecs update-service --cluster wanderlust-mega-project-cluster --service backend-task-service-tf --force-new-deployment --region us-east-2
-         run: aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_SERVICE }} --force-new-deployment --region us-east-2
+         run: aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_SERVICE }} --force-new-deployment --region ${{ env.AWS_REGION }}
 
